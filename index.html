@@ -27,7 +27,16 @@
     
     <!-- application scripts -->
     <script src="app.js" defer></script>
-
+    <link rel="manifest" href="kfahespwa.webmanifest">
+    <script>
+        // Register service worker.
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./ServiceWorker.js')
+                .then(function(reg) {
+                    console.log('[Service Worker] Registration successful.');
+                }, function (err) { console.log("[Service Worker] Error in registration", err); })
+        }
+    </script>
 </head>
 
 <body>

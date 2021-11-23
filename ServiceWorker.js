@@ -5,11 +5,11 @@
 */
 
 // variable definitions 
-var CACHE_NAME = 'ginkobusPWA-v1';
+var CACHE_NAME = 'ginkobusPWA';
 
 var contentToCache = [
   './index.html',    
-  './ginkobusPWA.webmanifest',    
+  './kfahespwa.webmanifest',    
   './style.css', 
   './app.js', 
   './icons/favicon.ico',
