@@ -17,13 +17,37 @@ document.addEventListener("DOMContentLoaded", function (_e) {
         if ("geolocation" in navigator) {
             var btnGeoloc = document.querySelector("#bcStations .btnGeoloc");
             btnGeoloc.classList.toggle("active");
-            // TODO
+            if(btnGeoloc.classList.contains("active")) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+                
+            }
         }
         else {
             alert("Votre appareil ne supporte pas la géolocalisation.");    
         }
     }
     
+    function showPosition(position) {
+        const lat1 = position.coords.latitude;
+        const lon1 = position.coords.longitude;
+        stations.forEach(st => {
+        const lat2 = st.lat;
+        const lon2 = st.lon;
+        const R = 6371e3; // metres
+        const φ1 = lat1 * Math.PI/180; // φ, λ in radians
+        const φ2 = lat2 * Math.PI/180;
+        const Δφ = (lat2-lat1) * Math.PI/180;
+        const Δλ = (lon2-lon1) * Math.PI/180;
+    
+        const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    
+        const d = R * c; // in metres
+            st.distance = d;
+        });
+    }
     
     /******************************************************************
                             Gestion des événements 
@@ -407,7 +431,15 @@ document.addEventListener("DOMContentLoaded", function (_e) {
      *  @param  String  id2     identifiant de station (ex. "st_battant")
      *  @return Number          < 0 si id1 précède id2, > 0 si id2 précède id1
      */
-    var fSort = null;
+    var fSort = function(id1, id2) {
+         if(stations[keys[id1]].distance < stations[keys[id2]].distance) {
+             return -1;
+         }
+         else if(stations[keys[id1]].distance > stations[keys[id2]].distance) {
+             return 1;
+         }
+         return 0;
+    }
     
     /** Détermine si la station passée en paramètre doit être affichée ou pas.
      *  @param  Object  st      l'objet Station à évaluer
@@ -452,6 +484,7 @@ document.addEventListener("DOMContentLoaded", function (_e) {
         }
         document.querySelector('#bcStations .liste').innerHTML = r;
     }
+
 
         
     /** 
@@ -589,7 +622,5 @@ document.addEventListener("DOMContentLoaded", function (_e) {
         });
     }
 
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./pwa-examples/js13kpwa/ServiceWorker.js');
-      };
+    
 });
